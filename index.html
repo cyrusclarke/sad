@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+   <meta charset="utf-8">
+        <script src="{{ url_for('static', filename='jquery.min.js')}}"></script>
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css')}}" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+ -->    <link rel="stylesheet" type ="text/css" href="static/main.css">
+        <script src="{{ url_for('static', filename='bootstrap.min.js')}}" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!--         <script src="{{ url_for('static', filename='sketch.min.js')     }}"></script>
+ -->
+  <title>S A D R O B O T</title>
+  </head>
+  </head>
+
+  <body>
+	  <h1>#sad</h1>
+	  <h5>here you will encounter an AI. it has learned to understand human emotions. it has done this by interpreting the hashtags people leave on social media platforms, a popular human method of categorizing images. you may submit an image for processing to see how this AI works. like most AIs, its decision making is constrained by the data it has been exposed to. while AIs such as this are often involved in making rudimentary decisions, their constructed minds will soon be put to work on matters which might impact your everyday experience.<p>please bear that in mind as you use this site.</h5>
+
+
+	<div class="image-container" style="position: relative;margin: auto;max-width: 60%;padding: 10px;border: 3px solid #73AD21;">	  
+	   	<div id="image"> 
+ 			<img src="{{url_for('send_image', filename=image_name)}}" width="400" height ="400">
+		<button class="btn" id="recognizeBtn" style="position: absolute;margin: auto;text-align: center;vertical-align: middle;top: 45%;left: 58%;width: 33%;padding: 5px;">Process</button>
+ 		</div>
+ 	</div>	
+	<div class="result-container" style="position: relative; margin: auto; max-width: 50%; padding: 10px; font-size: 44px;">
+<!-- 	needs ID to call result-->		
+		<div id="result" style="text-align: center;">
+		<script type="text/javascript">
+		      // $(function() {
+		      //   var image = $('#image').image();
+		      // });
+		      $('#recognizeBtn').on('click', function (e) {
+		        // var canvas = document.getElementById('sketch');		        
+		        var filename = document.getElementById('image');
+		        console.log(filename);
+		        var myImgSrc = document.getElementById("image").getElementsByTagName("img")[0].src;
+		        console.log("I M A G E U P L O A D= "+myImgSrc);
+		        // var myJSON = JSON.stringify(myImgSrc);
+		       	// console.log("J S O N I F I E D = "+myJSON);
+			        $.ajax({
+			          type: "POST",
+			          url: '/api',
+			          // data: JSON.stringify({'image':myImgSrc.toDataURL()}),
+			          // data: JSON.stringify({'image':myImgSrc}),
+			          //must stringify data and specify content type
+			          data: JSON.stringify(myImgSrc),
+			          contentType: "application/json; charset=utf-8",
+			        }).done(function(data) {
+			            console.log("D A T A  TO  BE  S E N T:"+data);
+			            //data is a 4 part array including % / dtype / array / emotion
+			            var text = data;
+			            //split data by the comma seperator
+			            var arr = text.split(",")
+			            //take 4th element in array
+			            var emotion = arr[3];
+			            console.log("text="+text)
+			            console.log("arr="+emotion);
+			            // $('#result').text('class: '+data)
+			            //remove special characters
+			            $('#result').html(emotion.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, ' '));
+			            // $('#result').text('emotion: '+emotion)
+			        });
+		       });
+
+		</script>
+		</div>
+		</br>
+		<clear>
+	<!-- build the upload button for the images -->
+	  	<form id="upload form" action="{{url_for('upload') }}" method ="POST" enctype="multipart/form-data">
+		<label class="btn btn-primary" style="border: 2px solid #444;font-size: 26px;width: 40%;text-align: center;margin: auto;position: relative;color: #00000080;text-transform: lowercase;float: left;">
+	  	browse <input type="file" name="file" accept'"image/*" multiple hidden>
+	  	</label>
+<!-- 	  	<input type = "file"  name="file" accept="image/*" multiple>
+ -->
+<!-- 		<input id="my-file-selector" type="file" style="display:none;">  
+ --> 	<input type="submit" value="upload">
+	  	</form>
+	</div>
+  </body>
+</html>
